@@ -1,0 +1,68 @@
+---
+title: UAMS Health Location Profile Logic
+config:
+  theme: 'default'
+---
+
+%%{
+    init: {
+        'flowchart': {
+            'curve': 'linear',
+            'defaultRenderer': 'elk'
+        }
+    }
+}%%
+flowchart TD
+
+    classDef start fill:#d4f0d4,font-size:1.2em;
+    classDef end_yes fill:#d4f0d4,font-size:1.2em;
+    classDef end_no fill:#ffd4d4,font-size:1.2em;
+
+    start([Start]):::start
+
+    start --> clinical_location{Either outpatient or inpatient clinical location?}
+    clinical_location -->|Yes| uams
+    clinical_location -->|No| no_location
+
+    uams{Solely a UAMS location?}
+    uams -->|Yes| epic_dep
+    uams -->|No| co_branded
+
+    epic_dep{Associated with a UAMS Health Epic department record?}
+    epic_dep -->|Yes| distinct_dep_external
+    epic_dep -->|No| distinct_signage_uams
+
+    distinct_dep_external{Distinct External Name value?}
+    distinct_dep_external -->|Yes| yes_location
+    distinct_dep_external -->|No| no_location
+
+    distinct_signage_uams{Has publicly visible permanent distinct physical signage?}
+    distinct_signage_uams -->|Yes| yes_location
+    distinct_signage_uams -->|No| no_location
+
+    co_branded{Co-branded joint venture?}
+    co_branded -->|Yes| distinct_signage_co_branded
+    co_branded -->|No| clinical_contract
+
+    distinct_signage_co_branded{Has publicly visible permanent distinct physical signage?}
+    distinct_signage_co_branded -->|Yes| technical_fees
+    distinct_signage_co_branded -->|No| no_location
+
+    clinical_contract{UAMS has a clinical contract?}
+    clinical_contract -->|Yes| clinical_oversight
+    clinical_contract -->|No| no_location
+
+    clinical_oversight{UAMS has clinical oversight?}
+    clinical_oversight -->|Yes| technical_fees
+    clinical_oversight -->|No| no_location
+
+    technical_fees{UAMS receives the technical fees?}
+    technical_fees -->|Yes| yes_location
+    technical_fees -->|No| professional_fees
+
+    professional_fees{UAMS receives the professional fees?}
+    professional_fees -->|Yes| yes_location
+    professional_fees -->|No| no_location
+
+    yes_location([Gets a location profile]):::end_yes
+    no_location([Doesn't get a location profile]):::end_no
