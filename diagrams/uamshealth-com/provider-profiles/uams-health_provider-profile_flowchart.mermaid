@@ -1,0 +1,63 @@
+---
+title: UAMS Health Provider Profile Logic
+config:
+    theme: 'default'
+    layout: elk
+---
+
+flowchart TD
+
+    classDef start fill:#d4f0d4,font-size:1.2em;
+    classDef end_yes fill:#d4f0d4,font-size:1.2em;
+    classDef end_no fill:#ffd4d4,font-size:1.2em;
+
+    start([Start]):::start
+
+    start --> current_worker
+
+    current_worker{Current UAMS worker?}
+    current_worker -->|No| no_profile
+    current_worker -->|Yes| worker_type
+
+    worker_type{"Employee (as opposed to contingent worker)?"}
+    worker_type -->|No| no_profile
+    worker_type -->|Yes| employee_type
+
+    employee_type{"Regular employee (as opposed to temporary, less-than-annual appointment, etc.)?"}
+    employee_type -->|No| no_profile
+    employee_type -->|Yes| clinical_role
+
+    clinical_role{"Has a clinical role?"}
+    clinical_role -->|No| no_profile
+    clinical_role -->|Yes| direct_patient_care
+
+    direct_patient_care{"Direct patient care?"}
+    direct_patient_care -->|No| no_profile
+    direct_patient_care -->|Yes| location
+
+    location{"≥1 practice location meets location criteria?"}
+    location -->|No| no_profile
+    location -->|Yes| physician
+
+    physician{"Either M.D., D.O., DPM, O.D., D.D.S., or D.M.D.?"}
+    physician -->|No| cnm
+    physician -->|Yes| resident_fellow
+
+    resident_fellow{"Either a resident or a fellow?"}
+    resident_fellow -->|Yes| no_profile
+    resident_fellow -->|No| yes_profile
+
+    cnm{"Certified Nurse Midwife (CNM)?"}
+    cnm -->|No| appointments
+    cnm -->|Yes| yes_profile
+
+    appointments{"Provide direct patient care via appointments?"}
+    appointments -->|No| no_profile
+    appointments -->|Yes| resource
+
+    resource{"Patients appointed to provider as a resource?"}
+    resource -->|Yes| no_profile
+    resource -->|No| yes_profile
+
+    no_profile([Doesn't get a provider profile]):::end_no
+    yes_profile([Gets a location profile]):::end_yes
