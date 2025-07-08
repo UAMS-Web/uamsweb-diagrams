@@ -18,6 +18,8 @@ This project contains flowcharts and other diagrams for UAMS Web Services, using
    - Press `Cmd + P` (Mac) or `Ctrl + P` (Windows/Linux).
    - Type and select `> MermaidChart: Preview Diagram` to view your diagram.
 
+**Note:** SVG exports generated from these diagrams currently crash Adobe Photoshop and Adobe Illustrator. Use PNG exports for compatibility with these applications.
+
 ---
 
 For more information on Mermaid syntax and features, visit the [official documentation](https://docs.mermaidchart.com/).
